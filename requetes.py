@@ -1,5 +1,7 @@
-
 import json
+import networkx as nx
+import numpy as np
+import matplotlib.pyplot as plt
 """
 # Q1
 def json_vers_nx(chemin):
@@ -62,7 +64,7 @@ def txt_to_json(file_path):
             data = json.loads(line)
             data_list.append(data)
     return data_list
-"""
+
 
 def txt_to_json(chemin, nouveau_chemin):
     try :
@@ -160,15 +162,10 @@ def json_vers_nx(chemin):
     
     return G
 
-file_path = "data.txt"
-
-graph = json_vers_nx(file_path)
-
-print(graph)
 
 def json_vers_nx(chemin):
     res = []
-    fichier = open(nom_fichier, 'r')
+    fichier = open(chemin, 'r')
     fichier.readline()
     for ligne in fichier:
         champs = ligne.split(',')
@@ -179,7 +176,45 @@ def json_vers_nx(chemin):
     fichier.close()
     return res
 
-"""
+def json_to_networkx(json_data):
+    # Créer un nouveau graphe
+    G = nx.Graph()
+
+    # Parcourir chaque film dans les données JSON
+    for film in json_data:
+        # Ajouter un nœud pour chaque film
+        G.add_node(film["title"], year=film["year"])
+
+        # Ajouter des nœuds pour les acteurs, les réalisateurs et les producteurs
+        casts = film["casts"].split(", ")
+        directors = film["directors"].split(", ")
+        producers = film["producers"].split(", ")
+
+        for actor in casts + directors + producers:
+            G.add_node(actor.strip())
+
+            # Ajouter une arête entre le film et chaque acteur, réalisateur et producteur
+            G.add_edge(film["title"], actor.strip())
+    nx.draw(G, with_labels = True)
+    plt.show()
+    return G
+
+# Charger les données JSON depuis un fichier
+with open('data.json', 'r') as file:
+    data = json.load(file)
+
+graphe=json_to_networkx(data)
+# Convertir les données JSON en un graphe NetworkX
+print(graphe)
+# Afficher les informations sur le graphe
+
+
+"""file_path = "data.json"
+
+graph = json_vers_nx(file_path)
+
+print(graph)"""
+
 """
 def lire_un_fichier_txt(file_path):
     donnees = []
