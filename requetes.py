@@ -1,226 +1,139 @@
-import json
-import networkx as nx
-import numpy as np
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Code diffusé aux étudiants de BUT1 dans le cadre de la SAE 2.02: Exploration algorithmique d'un problème.
+
+IUT d'Orleans BUT1 Informatique 2021-2022 
+"""
+
 import matplotlib.pyplot as plt
-"""
+import networkx as nx
+import json
+from collections import deque
+
 # Q1
-def json_vers_nx(chemin):
-# Q2
-def collaborateurs_communs(G,u,v):
-# Q3
-def collaborateurs_proches(G,u,k):
-def est_proche(G,u,v,k=1):
-def distance_naive(G,u,v):
-def distance(G,u,v):
-# Q4
-def centralite(G,u):
-def centre_hollywood(G):
-# Q5
-def eloignement_max(G:nx.Graph):
-# Bonus
-def centralite_groupe(G,S):
-"""
-
-"""
-def json_vers_nx(chemin):
-    with open(chemin, 'r') as f:
-        data = json.load(f)
-    
-    G = nx.Graph()
-    
-    for film in data:
-        acteurs = data[film]
-        for i in range(len(acteurs)):
-            for j in range(i+1, len(acteurs)):
-                G.add_edge(acteurs[i], acteurs[j], film=film)
-    
-    return G
-
-chemin_json = 'data.txt'
-
-graphe_collaborations = json_vers_nx(chemin_json)
-
-
-def txt_to_json(file_path):
-    data_list = []
-    with open(file_path, 'r') as file:
-        for line in file:
-            data = json.loads(line)
-            data_list.append(data)
-    return data_list
-
-
-file_path = "data.txt"
-json_data = txt_to_json(file_path)
-print(json_data)
-
-
-"""
-"""
-def txt_to_json(file_path):
-    data_list = []
-    with open(file_path, 'r') as file:
-        for line in file:
-            data = json.loads(line)
-            data_list.append(data)
-    return data_list
-
-
-def txt_to_json(chemin, nouveau_chemin):
-    try :
-
-        fichier = open(chemin, 'r')
-        nouveau_fichier = open(nouveau_chemin, 'w')
-        data = {"collaborations": []}
-        with fichier:
-            for line in fichier:
-                if line.strip():  
-                    acteurs = line.strip().split(', ')
-                    collaboration = {"acteurs": acteurs}
-                    data["collaborations"].append(collaboration)
-        with nouveau_fichier:
-            json.dump(data, nouveau_fichier, indent=4, ensure_ascii=False)
-    except :
-        print("il y'a une erreur")
-
-
-def txt_to_json(input_file, output_file):
-    data = {"collaborations": []}
-
-    with open(input_file, 'r') as f:
-        for line in f:
-            elements = line.strip().split(', ')
-            if len(elements) == 6:
-                title, casts, directors, producers, companies, year = elements
-                collaboration = {
-                    "title": title,
-                    "casts": casts,
-                    "directors": directors,
-                    "producers": producers,
-                    "companies": companies,
-                    "year": year
-                }
-                data["collaborations"].append(collaboration)
-
-    with open(output_file, 'w') as f:
-        json.dump(data, f, indent=4, ensure_ascii=False)
-
-
-def txt_to_json(input_file, output_file):
-    with open(input_file, 'r') as f:
-        data = f.readlines()
-
-    formatted_data = []
-    for line in data:
-        entry = json.loads(line)
-        formatted_entry = {
-            "title": entry.get("title", ""),
-            "casts": ", ".join(entry.get("cast")),
-            "directors": ", ".join(entry.get("directors", [])),
-            "producers": ", ".join(entry.get("producers", [])),
-            "companies": ", ".join(entry.get("companies", [])),
-            "year": entry.get("year", "")
-            
-        }
-        formatted_data.append(formatted_entry)
-
-    with open(output_file, 'w') as f:
-        json.dump(formatted_data, f, indent=4, ensure_ascii=False)
-
-txt_to_json("data.txt", "data.json")
-
-
-#Question 1
-"""
-def json_to_networkx(file_path):
-    G = nx.Graph()
-    
-    with open(file_path, 'r', encoding='utf-8') as file:
-        for line in file:
-            movie_data = json.loads(line)
-            cast = movie_data.get('cast', [])
-            for actor_list in cast:
-                for i in range(len(actor_list)):
-                    for j in range(i+1, len(actor_list)):
-                        actor1 = actor_list[i].strip('[').strip(']').strip('[').strip(']').strip(' ').split('|')[0]
-                        actor2 = actor_list[j].strip('[').strip(']').strip('[').strip(']').strip(' ').split('|')[0]
-                        G.add_edge(actor1, actor2, movie=movie_data['title'])
-    return G
-
 
 def json_vers_nx(chemin):
-    with open(chemin, 'r') as fichier:
-        donnees = json.load(fichier)
-    
-    G = nx.Graph()
-    
-    for film in donnees:
-        acteurs = film['acteurs']
-        for i in range(len(acteurs)):
-            for j in range(i+1, len(acteurs)):
-                G.add_edge(acteurs[i], acteurs[j])
-    
-    return G
-
-
-def json_vers_nx(chemin):
-    res = []
-    fichier = open(chemin, 'r')
-    fichier.readline()
-    for ligne in fichier:
-        champs = ligne.split(',')
-        if champs[8]==True:
-            res.append((champs[0], champs[1], champs[2], int(champs[3]), int(champs[4]), champs[5], champs[6], champs[7], True))
-        else:
-            res.append((champs[0], champs[1], champs[2], int(champs[3]), int(champs[4]), champs[5], champs[6], champs[7], False))
-    fichier.close()
+    listes = []
+    fic = open(chemin,"r",encoding='utf-8')
+    for ligne in fic:
+        l = json.loads(ligne)
+        listes.append(l["cast"])
+    res = nx.Graph()
+    for ligne in listes:
+        for acteur1 in ligne:
+            if acteur1 not in res.nodes:
+                res.add_node(acteur1)
+                for acteur2 in ligne:
+                    if acteur2 in res.nodes and acteur1 != acteur2:
+                        res.add_edge(acteur1,acteur2)
+    #nx.draw(res,with_labels=False, node_size=3)
+    #plt.show() 
     return res
 
-def json_to_networkx(json_data):
-    # Créer un nouveau graphe
-    G = nx.Graph()
+# Q2
 
-    # Parcourir chaque film dans les données JSON
-    for film in json_data:
-        # Ajouter un nœud pour chaque film
-        G.add_node(film["title"], year=film["year"])
+def collaborateurs_communs(G,u,v): 
+    if u not in G.nodes or v not in G.nodes:
+        return None
+    res = set()
+    for voisin in G.adj[u]:
+        if voisin in G.adj[v]:
+            res.add(voisin)
+    return res    
 
-        # Ajouter des nœuds pour les acteurs, les réalisateurs et les producteurs
-        casts = film["casts"].split(", ")
-        directors = film["directors"].split(", ")
-        producers = film["producers"].split(", ")
+# Q3
+def collaborateurs_proches(G,u,k):
+    """Fonction renvoyant l'ensemble des acteurs à distance au plus k de l'acteur u dans le graphe G. La fonction renvoie None si u est absent du graphe.
+    
+    Parametres:
+        G: le graphe
+        u: le sommet de départ
+        k: la distance depuis u
+    """
+    if u not in G.nodes:
+        print(u,"est un illustre inconnu")
+        return None
+    collaborateurs = set()
+    collaborateurs.add(u)
+    print(collaborateurs)
+    for i in range(k):
+        collaborateurs_directs = set()
+        for c in collaborateurs:
+            for voisin in G.adj[c]:
+                if voisin not in collaborateurs:
+                    collaborateurs_directs.add(voisin)
+        collaborateurs = collaborateurs.union(collaborateurs_directs)
+    return collaborateurs
 
-        for actor in casts + directors + producers:
-            G.add_node(actor.strip())
+def est_proche(G,u,v,k=1):
+    try:
+        return u in collaborateurs_proches(G,v,k)
+    except:
+        return None
 
-            # Ajouter une arête entre le film et chaque acteur, réalisateur et producteur
-            G.add_edge(film["title"], actor.strip())
-    nx.draw(G, with_labels = True)
-    plt.show()
-    return G
+def distance(G,act1,act2):
+    visited = set()
+    queue = deque()
+    distance = 0
+    queue.append((act1,0))
+    while queue:
+        node,distance = queue.popleft()
+        visited.add(node)
+        if node == act2:
+            return distance
+        for n in G.adj[node] :
+            if n == act2:
+                return distance+1
+            elif n not in visited:
+                queue.append((n,distance+1))
+                visited.add(n)
+    return distance
 
-# Charger les données JSON depuis un fichier
-with open('data.json', 'r') as file:
-    data = json.load(file)
+def distance_naive(G,act1,act2):
+    try:
+        return nx.shortest_path_length(G,act1,act2)
+    except:
+        return None
 
-graphe=json_to_networkx(data)
-# Convertir les données JSON en un graphe NetworkX
-print(graphe)
-# Afficher les informations sur le graphe
+# Q4
+def centralite(G,acteur):
+    somme = None
+    for voisin in G.nodes():
+        val = distance_naive(G, acteur, voisin)
+        if val is not None and (somme is None or val > somme[-1]):
+            if somme is None:
+                somme = [val]
+            else:
+                somme.append(val)
+    if somme is None:
+        return None
+    return somme[-1]
 
 
-"""file_path = "data.json"
+def centre_hollywood(G):
+    val_centre = None
+    centre = "_"
+    for voisin in G.nodes():
+        val = centralite(G,voisin)
+        if (val_centre is None ):
+            val_centre = val
+            centre=voisin
+        if val_centre<val:
+            val_centre = val   
+    return centre
 
-graph = json_vers_nx(file_path)
+# Q5
+def eloignement_max(G:nx.Graph):
+    distance_max = 0
+    for a1 in G.nodes():
+        for a2 in G.nodes():
+            if a1 != a2:
+                d = distance_naive(G,a1,a2)
+                if d > distance_max:
+                    distance_max = d
+    return distance_max
 
-print(graph)"""
-
-"""
-def lire_un_fichier_txt(file_path):
-    donnees = []
-    with open(file_path, 'r') as fichier:
-        for ligne in fichier :
-            objet_from = json.leads(ligne.strip[])
-            donnees.append(objet_from)
-    return donnees
-"""
+# Bonus
+def centralite_groupe(G,S):
+    return centre_hollywood(G.subgraph(S))
