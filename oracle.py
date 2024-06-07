@@ -17,7 +17,7 @@ def programme_principal():
     fichier="_"
     while fichier not in ["data.txt","data_100.txt","data_1000.txt","data_10000.txt"]:
         fichier=input("Donner moi le nom du fichier txt \n")
-    G = requetes.json_vers_nx("données/"+fichier)
+    G = requetes.json_vers_nx(fichier)
     while quitter not in "O":
         quitter="_"
         que_voulez_vous="_"

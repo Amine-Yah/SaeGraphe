@@ -1,5 +1,5 @@
 import requetes
-G = requetes.json_vers_nx("données/data_100.txt")
+G = requetes.json_vers_nx("data_100.txt")
 
 def test_collaborateurs_communs():
     assert requetes.collaborateurs_communs(G,"[[Núria Espert]]","[[Mercè Pons]]") == None
