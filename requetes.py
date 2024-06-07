@@ -14,6 +14,14 @@ from collections import deque
 # Q1
 
 def json_vers_nx(chemin):
+    """Convertir un fichier TXT au format JSON en un graphe NetworkX.
+
+    Args:
+        chemin (str): chemin vers un fichier txt
+
+    Returns:
+        Graph: un graphe
+    """
     listes = []
     fic = open(chemin,"r",encoding='utf-8')
     for ligne in fic:
@@ -34,6 +42,16 @@ def json_vers_nx(chemin):
 # Q2
 
 def collaborateurs_communs(G,u,v): 
+    """la liste des collaborateurs communs entre deux acteurs
+
+    Args:
+        G (Graph): le graphe à étudier
+        u (str): le premier acteur
+        v (str): le deuxième acteur
+
+    Returns:
+        set: l'ensemble des collaborateurs communs entre deux acteurs
+    """
     if u not in G.nodes or v not in G.nodes:
         return None
     res = set()
@@ -67,12 +85,34 @@ def collaborateurs_proches(G,u,k):
     return collaborateurs
 
 def est_proche(G,u,v,k=1):
+    """
+    Fonction qui retourne True si les 2 acteurs sont proche sinon False.
+    
+    Parametres:
+        G(graph): le graphe
+        u(str): le premier acteur
+        v(str): le deuxième acteur
+
+    Returns:
+        bool: True si les 2 acteurs sont proche sinon False
+    """  
     try:
         return u in collaborateurs_proches(G,v,k)
     except:
         return None
 
 def distance(G,act1,act2):
+    """
+    Fonction qui retourne la distance entre deux acteurs.
+    
+    Parametres:
+        G(graph): le graphe
+        act1(str): le premier acteur
+        act2(str): le deuxième acteur
+
+    Returns:
+        int: distance entre deux acteurs
+    """  
     visited = set()
     queue = deque()
     distance = 0
@@ -91,6 +131,17 @@ def distance(G,act1,act2):
     return distance
 
 def distance_naive(G,act1,act2):
+    """
+    Fonction qui retourne la distance entre deux acteurs.
+    
+    Parametres:
+        G(graph): le graphe
+        act1(str): le premier acteur
+        act2(str): le deuxième acteur
+
+    Returns:
+        int: distance entre deux acteurs
+    """  
     try:
         return nx.shortest_path_length(G,act1,act2)
     except:
@@ -98,6 +149,15 @@ def distance_naive(G,act1,act2):
 
 # Q4
 def centralite(G,acteur):
+    """Fonction renvoyant la plus grande distance entre un acteur et les autres acteurs du graphe G avec le parcours en largeur et la distances entre acteurs.
+
+    Args:
+        G (graph): le graphe
+        acteur (str): un acteur
+
+    Returns:
+        int : la plus grande distance entre un acteur et les autres acteurs du graphe G.
+    """
     somme = None
     for voisin in G.nodes():
         val = distance_naive(G, acteur, voisin)
@@ -112,6 +172,14 @@ def centralite(G,acteur):
 
 
 def centre_hollywood(G):
+    """Fonction renvoyant l'acteur le plus au centre du graphe.
+
+    Args:
+        G (graph): le graphe
+
+    Returns:
+        str : l'acteur le plus au centre du graphe
+    """
     val_centre = None
     centre = "_"
     for voisin in G.nodes():
@@ -125,6 +193,14 @@ def centre_hollywood(G):
 
 # Q5
 def eloignement_max(G:nx.Graph):
+    """Fonction renvoyant l'eloignement maximum entre tout les acteurs
+
+    Args:
+        G (graph): le graphe
+
+    Returns:
+        int: l'eloignement maximum entre tout les acteurs
+    """
     distance_max = 0
     for a1 in G.nodes():
         for a2 in G.nodes():
