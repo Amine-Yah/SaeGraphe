@@ -52,6 +52,7 @@ def collaborateurs_communs(G,u,v):
     Returns:
         set: l'ensemble des collaborateurs communs entre deux acteurs
     """
+
     if u not in G.nodes or v not in G.nodes:
         return None
     res = set()
@@ -85,6 +86,7 @@ def collaborateurs_proches(G,u,k):
     return collaborateurs
 
 def est_proche(G,u,v,k=1):
+
     """
     Fonction qui retourne True si les 2 acteurs sont proche sinon False.
     
